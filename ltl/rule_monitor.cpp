@@ -5,7 +5,6 @@
 
 #include "ltl/rule_monitor.h"
 
-#include <easy/profiler.h>
 #include <algorithm>
 #include <fstream>
 #include <map>
@@ -21,6 +20,10 @@
 #include "spot/tl/print.hh"
 #include "spot/twa/bddprint.hh"
 #include "spot/twaalgos/dot.hh"
+
+#ifdef PROFILING
+#include <easy/profiler.h>
+#endif
 
 namespace ltl {
 RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
@@ -96,7 +99,9 @@ std::vector<RuleState> RuleMonitor::make_rule_state(
       std::max_element(ap_alphabet_.begin(), ap_alphabet_.end(),
                        [](const APContainer &a, const APContainer &b) {
                          return (a.id_idx_ < b.id_idx_);
-                       })->id_idx_ + 1;
+                       })
+          ->id_idx_ +
+      1;
   num_other_agents = std::max(num_other_agents, 0);
 
   std::vector<int> current_agent_ids;
@@ -148,7 +153,10 @@ std::vector<std::vector<int>> RuleMonitor::all_k_permutations(
 
 float RuleMonitor::evaluate(const EvaluationMap &labels,
                             RuleState &state) const {
+#ifdef PROFILING
   EASY_FUNCTION();
+#endif
+
   EvaluationMap alive_labels = labels;
   alive_labels.insert({Label::make_alive(), true});
   return transit(alive_labels, state);
