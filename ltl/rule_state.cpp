@@ -8,12 +8,11 @@
 #include <utility>
 
 namespace ltl {
-RuleState::RuleState(uint32_t current_state, double rule_belief,
+RuleState::RuleState(uint32_t current_state,
                      size_t violated,
                      std::shared_ptr<const RuleMonitor> automaton,
                      std::vector<int> agent_id)
     : current_state_(current_state),
-      rule_belief_(rule_belief),
       violated_(violated),
       automaton_(std::move(automaton)),
       agent_ids_(std::move(agent_id)) {}
@@ -21,7 +20,6 @@ uint32_t RuleState::get_current_state() const { return current_state_; }
 RulePriority RuleState::get_priority() const {
   return automaton_->get_priority();
 }
-double RuleState::get_rule_belief() const { return rule_belief_; }
 size_t RuleState::get_violation_count() const { return violated_; }
 void RuleState::reset_violations() { violated_ = 0; }
 const std::shared_ptr<const RuleMonitor> &RuleState::get_automaton() const {

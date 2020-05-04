@@ -22,7 +22,6 @@ class RuleState {
   friend class RuleMonitor;
   uint32_t get_current_state() const;
   RulePriority get_priority() const;
-  double get_rule_belief() const;
   size_t get_violation_count() const;
   void reset_violations();
   const std::shared_ptr<const RuleMonitor> &get_automaton() const;
@@ -31,11 +30,10 @@ class RuleState {
   friend std::ostream &operator<<(std::ostream &os, const RuleState &state);
 
  private:
-  RuleState(uint32_t current_state, double rule_belief, size_t violated,
+  RuleState(uint32_t current_state, size_t violated,
             std::shared_ptr<const RuleMonitor> automaton,
             std::vector<int> agent_ids = {});
   uint32_t current_state_;
-  double rule_belief_;
   size_t violated_;
   std::shared_ptr<const RuleMonitor> automaton_;
   std::vector<int> agent_ids_;

@@ -32,10 +32,9 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
 
   static RuleMonitorSPtr make_rule(std::string ltl_formula_str, float weight,
                                    RulePriority priority,
-                                   float init_belief = 1.0,
                                    float final_reward = 0.0f) {
-    return RuleMonitorSPtr(new RuleMonitor(ltl_formula_str, weight, priority,
-                                           init_belief, final_reward));
+    return RuleMonitorSPtr(
+        new RuleMonitor(ltl_formula_str, weight, priority, final_reward));
   }
 
   std::vector<RuleState> make_rule_state(
@@ -45,8 +44,6 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   float evaluate(EvaluationMap const &labels, RuleState &state) const;
 
   float get_final_reward(const RuleState &state) const;
-
-  void update_belief(RuleState &state) const;
 
   RulePriority get_priority() const;
 
@@ -62,15 +59,13 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   const std::string &get_str_formula() const;
   float get_weight() const;
   float get_final_reward1() const;
-  const float get_init_belief() const;
   void PrintToDot(const std::string &fname);
 
  private:
   enum BddResult { TRUE, FALSE, UNDEF };
 
   RuleMonitor(const std::string &ltl_formula_str, float weight,
-              RulePriority priority, float init_belief = 1.0,
-              float final_reward = 0.0f);
+              RulePriority priority, float final_reward = 0.0f);
   static spot::formula parse_formula(const std::string &ltl_formula_str);
   static BddResult evaluate_bdd(bdd cond, const std::map<int, bool> &vars);
 
@@ -90,7 +85,6 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   spot::formula ltl_formula_;
   RulePriority priority_;
   Eigen::Matrix2d observation_prob_;
-  const float init_belief_;
   std::vector<APContainer> ap_alphabet_;
   bool rule_is_agent_specific_;
   std::vector<std::vector<int>> all_k_permutations(

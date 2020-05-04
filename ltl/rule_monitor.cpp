@@ -27,15 +27,12 @@
 
 namespace ltl {
 RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
-                         RulePriority priority, float init_belief,
-                         float final_reward)
+                         RulePriority priority, float final_reward)
     : str_formula_(ltl_formula_str),
       weight_(weight),
       final_reward_(final_reward),
       priority_(priority),
-      init_belief_(init_belief),
       rule_is_agent_specific_(false) {
-  assert(init_belief <= 1.0 && init_belief >= 0.0);
 
   const std::string agent_free_formula = parse_agents(ltl_formula_str);
   ltl_formula_ = parse_formula(agent_free_formula);
@@ -121,11 +118,11 @@ std::vector<RuleState> RuleMonitor::make_rule_state(
                         existing_permutations.end(),
                         std::back_inserter(new_permutations));
     for (const auto &perm : new_permutations) {
-      l.push_back(RuleState(aut_->get_init_state_number(), init_belief_, 0,
+      l.push_back(RuleState(aut_->get_init_state_number(), 0,
                             shared_from_this(), perm));
     }
   } else if (!is_agent_specific()) {
-    l.push_back(RuleState(aut_->get_init_state_number(), init_belief_, 0,
+    l.push_back(RuleState(aut_->get_init_state_number(), 0,
                           shared_from_this(), {}));
   }
   return l;
@@ -199,7 +196,7 @@ float RuleMonitor::transit(const EvaluationMap &labels,
     ++state.violated_;
     // Reset automaton if rule has been violated
     state.current_state_ = aut_->get_init_state_number();
-    penalty = static_cast<float>(state.rule_belief_) * weight_;
+    penalty = weight_;
   } else if (transition_found != BddResult::TRUE && undef_trans_found) {
     VLOG(2) << "Rule" << str_formula_ << " undefined!";
   }
@@ -230,7 +227,7 @@ float RuleMonitor::get_final_reward(const RuleState &state) const {
   if (!aut_->state_is_accepting(final_state.current_state_)) {
     penalty = weight_;
   }
-  return static_cast<float>(state.rule_belief_) * penalty;
+  return penalty;
 }
 
 std::ostream &operator<<(std::ostream &os, RuleMonitor const &d) {
@@ -238,21 +235,6 @@ std::ostream &operator<<(std::ostream &os, RuleMonitor const &d) {
   spot::print_psl(os, d.ltl_formula_);
   os << "\", weight: " << d.weight_ << ", priority: " << d.priority_;
   return os;
-}
-
-void RuleMonitor::update_belief(RuleState &state) const {
-  Eigen::Vector2d belief_v(state.rule_belief_, 1.0 - state.rule_belief_);
-  if (!ltl_formula_.is_syntactic_safety() &&
-      !aut_->state_is_accepting(state.current_state_)) {
-    ++state.violated_;
-  }
-  if (state.violated_ > 0) {
-    int observation = 1;
-    double eta =
-        1.0 / (observation_prob_.col(observation).transpose() * belief_v)(0);
-    belief_v = eta * observation_prob_.col(observation).cwiseProduct(belief_v);
-    state.rule_belief_ = belief_v(0);
-  }
 }
 
 spot::formula RuleMonitor::parse_formula(const std::string &ltl_formula_str) {
@@ -272,7 +254,6 @@ bool RuleMonitor::is_agent_specific() const { return rule_is_agent_specific_; }
 const std::string &RuleMonitor::get_str_formula() const { return str_formula_; }
 float RuleMonitor::get_weight() const { return weight_; }
 float RuleMonitor::get_final_reward1() const { return final_reward_; }
-const float RuleMonitor::get_init_belief() const { return init_belief_; }
 void RuleMonitor::PrintToDot(const std::string &fname) {
   std::ofstream os;
   os.open(fname);
