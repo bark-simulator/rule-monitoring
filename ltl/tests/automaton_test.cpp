@@ -12,6 +12,14 @@
 using namespace ltl;
 using RuleMonitorSPtr = RuleMonitor::RuleMonitorSPtr;
 
+enum RewardPriority {
+  SAFETY = 0,
+  LEGAL_RULE,
+  LEGAL_RULE_B,
+  LEGAL_RULE_C,
+  GOAL,
+};
+
 TEST(AutomatonTest, simple) {
   RuleMonitorSPtr aut =
       RuleMonitor::make_rule("G label", -1.0f, RewardPriority::SAFETY);
