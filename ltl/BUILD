@@ -7,7 +7,6 @@ cc_library(
     ],
     hdrs = [
         "common.h",
-        "evaluator_label_base.h",
         "rule_monitor.h",
         "label.h",
         "rule_state.h",
