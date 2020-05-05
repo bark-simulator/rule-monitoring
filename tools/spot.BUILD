@@ -122,13 +122,11 @@ cc_library(
         "ltdl/lt__strl.c",
         "ltdl/slist.c",
     ],
-    copts = ["-I external/spotremote/ltdl/libltdl", "-I external/spotremote/ltdl"],
+    includes = ["ltdl/libltdl", "ltdl"],
     defines = ["LTDLOPEN=libltdl", "LTDL"],
     hdrs = glob(
         [
-            "ltdl/ltdl.h",
-            "ltdl/config.h",
-            "ltdl/libltdl/*.h",
+            "ltdl/**/*.h",
         ],
     ),
     visibility = [
