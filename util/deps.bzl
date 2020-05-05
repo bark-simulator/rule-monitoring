@@ -83,9 +83,9 @@ cc_library(
     name = "spot",
     build_file = "@rule_monitor_project//tools:spot.BUILD",
     patch_cmds = ["./configure"],
-    sha256 = "dcb7aa684725304afb3d435f26f25b51fbd6e9a6ef610e16163cc0030ad5eab4",
-    strip_prefix = "spot-2.8.1",
-    urls = ["http://www.lrde.epita.fr/dload/spot/spot-2.8.1.tar.gz"],
+    sha256 = "cf7c55d29bfc07f0c0b6d73d620324dda0a95158e8390641c01a66803253e071",
+    strip_prefix = "spot-2.9",
+    urls = ["https://www.lrde.epita.fr/dload/spot/spot-2.9.tar.gz"],
     )
 
 def _maybe(repo_rule, name, **kwargs):
