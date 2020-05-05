@@ -8,7 +8,6 @@
 
 #include "define_rule_monitor.hpp"
 
-#include "ltl/evaluator_label_base.h"
 #include "ltl/label.h"
 #include "ltl/rule_monitor.h"
 
@@ -16,8 +15,8 @@ namespace py = pybind11;
 using namespace ltl;
 void define_rule_monitor(py::module m) {
   py::class_<RuleMonitor, std::shared_ptr<RuleMonitor>>(m, "RuleMonitor")
-      .def(py::init(&RuleMonitor::make_rule))
-      .def("make_rule", &RuleMonitor::make_rule)
+      .def(py::init(&RuleMonitor::MakeRule))
+      .def("MakeRule", &RuleMonitor::MakeRule)
       .def("__repr__",
            [](const RuleMonitor &m) {
              std::stringstream os;
@@ -26,13 +25,13 @@ void define_rule_monitor(py::module m) {
            })
       .def(py::pickle(
           [](const RuleMonitor &b) {
-            return py::make_tuple(b.get_str_formula(), b.get_weight(),
-                                  b.get_priority(), b.get_final_reward1());
+            return py::make_tuple(b.GetStrFormula(), b.GetWeight(),
+                                  b.GetPriority(), b.GetFinalReward());
           },
           [](py::tuple t) {
             if (t.size() != 4)
               throw std::runtime_error("Invalid RuleMonitor evaluator state!");
-            return RuleMonitor::make_rule(
+            return RuleMonitor::MakeRule(
                 t[0].cast<std::string>(), t[1].cast<float>(),
                 t[2].cast<RulePriority>(), t[3].cast<float>());
           }));

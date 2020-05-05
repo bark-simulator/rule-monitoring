@@ -28,68 +28,68 @@ class RuleState;
 
 class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
  public:
-  typedef std::shared_ptr<RuleMonitor> RuleMonitorSPtr;
+    typedef std::shared_ptr<RuleMonitor> RuleMonitorSPtr;
 
-  static RuleMonitorSPtr make_rule(std::string ltl_formula_str, float weight,
-                                   RulePriority priority,
-                                   float final_reward = 0.0f) {
-    return RuleMonitorSPtr(
-        new RuleMonitor(ltl_formula_str, weight, priority, final_reward));
-  }
+    static RuleMonitorSPtr MakeRule(std::string ltl_formula_str, float weight,
+                                    RulePriority priority,
+                                    float final_reward = 0.0f) {
+        return RuleMonitorSPtr(
+            new RuleMonitor(ltl_formula_str, weight, priority, final_reward));
+    }
 
-  std::vector<RuleState> make_rule_state(
-      const std::vector<int> &current_agent_ids = {},
-      const std::vector<int> &existing_agent_ids = {}) const;
+    std::vector<RuleState> MakeRuleState(
+        const std::vector<int> &current_agent_ids = {},
+        const std::vector<int> &existing_agent_ids = {}) const;
 
-  float evaluate(EvaluationMap const &labels, RuleState &state) const;
+    float Evaluate(EvaluationMap const &labels, RuleState &state) const;
 
-  float get_final_reward(const RuleState &state) const;
+    float GetFinalReward(const RuleState &state) const;
 
-  RulePriority get_priority() const;
+    RulePriority GetPriority() const;
 
-  void set_weight(float weight);
+    void SetWeight(float weight);
 
-  void set_final_reward(float final_reward);
+    void SetFinalReward(float final_reward);
 
-  void set_priority(RulePriority priority);
+    void SetPriority(RulePriority priority);
 
-  bool is_agent_specific() const;
+    bool IsAgentSpecific() const;
 
-  friend std::ostream &operator<<(std::ostream &os, RuleMonitor const &d);
-  const std::string &get_str_formula() const;
-  float get_weight() const;
-  float get_final_reward1() const;
-  void PrintToDot(const std::string &fname);
+    friend std::ostream &operator<<(std::ostream &os, RuleMonitor const &d);
+    const std::string &GetStrFormula() const;
+    float GetWeight() const;
+    float GetFinalReward() const;
+    void PrintToDot(const std::string &fname);
 
  private:
-  enum BddResult { TRUE, FALSE, UNDEF };
+    enum BddResult { TRUE, FALSE, UNDEF };
 
-  RuleMonitor(const std::string &ltl_formula_str, float weight,
-              RulePriority priority, float final_reward = 0.0f);
-  static spot::formula parse_formula(const std::string &ltl_formula_str);
-  static BddResult evaluate_bdd(bdd cond, const std::map<int, bool> &vars);
+    static spot::formula ParseFormula(const std::string &ltl_formula_str);
+    static BddResult EvaluateBdd(bdd cond, const std::map<int, bool> &vars);
 
-  std::string parse_agents(const std::string &ltl_formula_str);
+    RuleMonitor(const std::string &ltl_formula_str, float weight,
+                RulePriority priority, float final_reward = 0.0f);
+    std::string ParseAgents(const std::string &ltl_formula_str);
+    std::vector<std::vector<int>> AllKPermutations(
+        const std::vector<int> &values, int k) const;
+    float Transit(const EvaluationMap &labels, RuleState &state) const;
 
-  struct APContainer {
-    std::string ap_str_;
-    spot::formula ap_;
-    int id_idx_;
-    bool is_agent_specific;
-  };
+    struct APContainer {
+        std::string ap_str;
+        spot::formula ap;
+        int id_idx;
+        bool is_agent_specific;
+    };
 
-  std::string str_formula_;
-  float weight_;
-  float final_reward_;
-  spot::twa_graph_ptr aut_;
-  spot::formula ltl_formula_;
-  RulePriority priority_;
-  Eigen::Matrix2d observation_prob_;
-  std::vector<APContainer> ap_alphabet_;
-  bool rule_is_agent_specific_;
-  std::vector<std::vector<int>> all_k_permutations(
-      const std::vector<int> &values, int k) const;
-  float transit(const EvaluationMap &labels, RuleState &state) const;
+    std::string str_formula_;
+    float weight_;
+    float final_reward_;
+    spot::twa_graph_ptr aut_;
+    spot::formula ltl_formula_;
+    RulePriority priority_;
+    Eigen::Matrix2d observation_prob_;
+    std::vector<APContainer> ap_alphabet_;
+    bool rule_is_agent_specific_;
 };
 }  // namespace ltl
 

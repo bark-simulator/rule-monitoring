@@ -20,13 +20,13 @@ class RuleMonitor;
 class RuleState {
  public:
   friend class RuleMonitor;
-  uint32_t get_current_state() const;
-  RulePriority get_priority() const;
-  size_t get_violation_count() const;
-  void reset_violations();
-  const std::shared_ptr<const RuleMonitor> &get_automaton() const;
-  bool is_agent_specific() const;
-  const std::vector<int> &get_agent_ids() const;
+  uint32_t GetCurrentState() const;
+  RulePriority GetPriority() const;
+  size_t GetViolationCount() const;
+  void ResetViolations();
+  const std::shared_ptr<const RuleMonitor> &GetAutomaton() const;
+  bool IsAgentSpecific() const;
+  const std::vector<int> &GetAgentIds() const;
   friend std::ostream &operator<<(std::ostream &os, const RuleState &state);
 
  private:

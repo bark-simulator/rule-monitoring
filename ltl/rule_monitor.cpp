@@ -34,8 +34,8 @@ RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
       priority_(priority),
       rule_is_agent_specific_(false) {
 
-  const std::string agent_free_formula = parse_agents(ltl_formula_str);
-  ltl_formula_ = parse_formula(agent_free_formula);
+  const std::string agent_free_formula = ParseAgents(ltl_formula_str);
+  ltl_formula_ = ParseFormula(agent_free_formula);
   spot::translator trans;
   trans.set_pref(spot::postprocessor::Deterministic);
   trans.set_type(spot::postprocessor::BA);
@@ -57,7 +57,7 @@ RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
   }
   observation_prob_ << 0.9, 0.1, 0.5, 0.5;
 }
-std::string RuleMonitor::parse_agents(const std::string &ltl_formula_str) {
+std::string RuleMonitor::ParseAgents(const std::string &ltl_formula_str) {
   std::string remaining = ltl_formula_str;
   std::string agent_free_formula;
   // Use #[0-9]+ as suffix of any AP to indicate agent specific rules.
@@ -89,15 +89,15 @@ std::string RuleMonitor::parse_agents(const std::string &ltl_formula_str) {
   return agent_free_formula;
 }
 
-std::vector<RuleState> RuleMonitor::make_rule_state(
+std::vector<RuleState> RuleMonitor::MakeRuleState(
     const std::vector<int> &new_agent_ids,
     const std::vector<int> &existing_agent_ids) const {
   int num_other_agents =
       std::max_element(ap_alphabet_.begin(), ap_alphabet_.end(),
                        [](const APContainer &a, const APContainer &b) {
-                         return (a.id_idx_ < b.id_idx_);
+                         return (a.id_idx < b.id_idx);
                        })
-          ->id_idx_ +
+          ->id_idx +
       1;
   num_other_agents = std::max(num_other_agents, 0);
 
@@ -106,11 +106,11 @@ std::vector<RuleState> RuleMonitor::make_rule_state(
                  existing_agent_ids.begin(), existing_agent_ids.end(),
                  std::back_inserter(current_agent_ids));
   std::vector<RuleState> l;
-  if (is_agent_specific() && current_agent_ids.size() >= num_other_agents) {
+  if (IsAgentSpecific() && current_agent_ids.size() >= num_other_agents) {
     std::vector<std::vector<int>> existing_permutations =
-        all_k_permutations(existing_agent_ids, num_other_agents);
+        AllKPermutations(existing_agent_ids, num_other_agents);
     std::vector<std::vector<int>> all_permutations =
-        all_k_permutations(current_agent_ids, num_other_agents);
+        AllKPermutations(current_agent_ids, num_other_agents);
     // Permutations to create
     std::vector<std::vector<int>> new_permutations;
     std::set_difference(all_permutations.begin(), all_permutations.end(),
@@ -121,13 +121,13 @@ std::vector<RuleState> RuleMonitor::make_rule_state(
       l.push_back(RuleState(aut_->get_init_state_number(), 0,
                             shared_from_this(), perm));
     }
-  } else if (!is_agent_specific()) {
+  } else if (!IsAgentSpecific()) {
     l.push_back(RuleState(aut_->get_init_state_number(), 0,
                           shared_from_this(), {}));
   }
   return l;
 }
-std::vector<std::vector<int>> RuleMonitor::all_k_permutations(
+std::vector<std::vector<int>> RuleMonitor::AllKPermutations(
     const std::vector<int> &values, int k) const {
   if (values.empty()) {
     return {};
@@ -148,31 +148,31 @@ std::vector<std::vector<int>> RuleMonitor::all_k_permutations(
   return permutations;
 }
 
-float RuleMonitor::evaluate(const EvaluationMap &labels,
+float RuleMonitor::Evaluate(const EvaluationMap &labels,
                             RuleState &state) const {
 #ifdef PROFILING
   EASY_FUNCTION();
 #endif
 
   EvaluationMap alive_labels = labels;
-  alive_labels.insert({Label::make_alive(), true});
-  return transit(alive_labels, state);
+  alive_labels.insert({Label::MakeAlive(), true});
+  return Transit(alive_labels, state);
 }
 
-float RuleMonitor::transit(const EvaluationMap &labels,
+float RuleMonitor::Transit(const EvaluationMap &labels,
                            RuleState &state) const {
   std::map<int, bool> bddvars;
   spot::bdd_dict_ptr bddDictPtr = aut_->get_dict();
   for (const auto &ap : ap_alphabet_) {
     Label label;
     if (ap.is_agent_specific) {
-      label = Label(ap.ap_str_, state.get_agent_ids()[ap.id_idx_]);
+      label = Label(ap.ap_str, state.GetAgentIds()[ap.id_idx]);
     } else {
-      label = Label(ap.ap_str_);
+      label = Label(ap.ap_str);
     }
     auto it = labels.find(label);
     if (it != labels.end()) {
-      int bdd_var = bddDictPtr->has_registered_proposition(ap.ap_, aut_);
+      int bdd_var = bddDictPtr->has_registered_proposition(ap.ap, aut_);
       bddvars.insert({bdd_var, it->second});
     }
   }
@@ -181,7 +181,7 @@ float RuleMonitor::transit(const EvaluationMap &labels,
   // Indicates if we have found undefined transitions
   bool undef_trans_found = false;
   for (const auto &transition : aut_->out(state.current_state_)) {
-    transition_found = evaluate_bdd(transition.cond, bddvars);
+    transition_found = EvaluateBdd(transition.cond, bddvars);
     if (transition_found == BddResult::TRUE) {
       state.current_state_ = transition.dst;
       break;
@@ -203,7 +203,7 @@ float RuleMonitor::transit(const EvaluationMap &labels,
   return penalty;
 }
 
-RuleMonitor::BddResult RuleMonitor::evaluate_bdd(
+RuleMonitor::BddResult RuleMonitor::EvaluateBdd(
     bdd cond, const std::map<int, bool> &vars) {
   bdd bdd_node = cond;
   while (bdd_node != bddtrue && bdd_node != bddfalse) {
@@ -218,12 +218,12 @@ RuleMonitor::BddResult RuleMonitor::evaluate_bdd(
   return bdd_node == bddtrue ? BddResult::TRUE : BddResult::FALSE;
 }
 
-float RuleMonitor::get_final_reward(const RuleState &state) const {
+float RuleMonitor::GetFinalReward(const RuleState &state) const {
   float penalty = final_reward_;
   EvaluationMap not_alive;
-  not_alive.insert({Label::make_alive(), false});
+  not_alive.insert({Label::MakeAlive(), false});
   RuleState final_state = state;
-  transit(not_alive, final_state);
+    Transit(not_alive, final_state);
   if (!aut_->state_is_accepting(final_state.current_state_)) {
     penalty = weight_;
   }
@@ -237,23 +237,23 @@ std::ostream &operator<<(std::ostream &os, RuleMonitor const &d) {
   return os;
 }
 
-spot::formula RuleMonitor::parse_formula(const std::string &ltl_formula_str) {
+spot::formula RuleMonitor::ParseFormula(const std::string &ltl_formula_str) {
   spot::parsed_formula pf = spot::parse_infix_psl(ltl_formula_str);
   if (!pf.errors.empty()) {
     pf.format_errors(LOG(FATAL));
   }
   return pf.f;
 }
-void RuleMonitor::set_weight(float weight) { weight_ = weight; }
-void RuleMonitor::set_final_reward(float final_reward) {
+void RuleMonitor::SetWeight(float weight) { weight_ = weight; }
+void RuleMonitor::SetFinalReward(float final_reward) {
   final_reward_ = final_reward;
 }
-void RuleMonitor::set_priority(RulePriority priority) { priority_ = priority; }
-RulePriority RuleMonitor::get_priority() const { return priority_; }
-bool RuleMonitor::is_agent_specific() const { return rule_is_agent_specific_; }
-const std::string &RuleMonitor::get_str_formula() const { return str_formula_; }
-float RuleMonitor::get_weight() const { return weight_; }
-float RuleMonitor::get_final_reward1() const { return final_reward_; }
+void RuleMonitor::SetPriority(RulePriority priority) { priority_ = priority; }
+RulePriority RuleMonitor::GetPriority() const { return priority_; }
+bool RuleMonitor::IsAgentSpecific() const { return rule_is_agent_specific_; }
+const std::string &RuleMonitor::GetStrFormula() const { return str_formula_; }
+float RuleMonitor::GetWeight() const { return weight_; }
+float RuleMonitor::GetFinalReward() const { return final_reward_; }
 void RuleMonitor::PrintToDot(const std::string &fname) {
   std::ofstream os;
   os.open(fname);

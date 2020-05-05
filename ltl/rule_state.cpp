@@ -16,27 +16,27 @@ RuleState::RuleState(uint32_t current_state,
       violated_(violated),
       automaton_(std::move(automaton)),
       agent_ids_(std::move(agent_id)) {}
-uint32_t RuleState::get_current_state() const { return current_state_; }
-RulePriority RuleState::get_priority() const {
-  return automaton_->get_priority();
+uint32_t RuleState::GetCurrentState() const { return current_state_; }
+RulePriority RuleState::GetPriority() const {
+  return automaton_->GetPriority();
 }
-size_t RuleState::get_violation_count() const { return violated_; }
-void RuleState::reset_violations() { violated_ = 0; }
-const std::shared_ptr<const RuleMonitor> &RuleState::get_automaton() const {
+size_t RuleState::GetViolationCount() const { return violated_; }
+void RuleState::ResetViolations() { violated_ = 0; }
+const std::shared_ptr<const RuleMonitor> &RuleState::GetAutomaton() const {
   return automaton_;
 }
 std::ostream &operator<<(std::ostream &os, const RuleState &state) {
   os << "current_state_: " << state.current_state_
      << " violated_: " << state.violated_
-     << " automaton_: " << state.automaton_->get_str_formula()
+     << " automaton_: " << state.automaton_->GetStrFormula()
      << " agent_ids: [";
-  for (const auto &id : state.get_agent_ids()) {
+  for (const auto &id : state.GetAgentIds()) {
     os << id << ", ";
   }
   os << "]";
   return os;
 }
-bool RuleState::is_agent_specific() const { return !agent_ids_.empty(); }
-const std::vector<int> &RuleState::get_agent_ids() const { return agent_ids_; }
+bool RuleState::IsAgentSpecific() const { return !agent_ids_.empty(); }
+const std::vector<int> &RuleState::GetAgentIds() const { return agent_ids_; }
 
 }  // namespace ltl

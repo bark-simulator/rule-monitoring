@@ -12,79 +12,71 @@
 using namespace ltl;
 using RuleMonitorSPtr = RuleMonitor::RuleMonitorSPtr;
 
-enum RewardPriority {
-  SAFETY = 0,
-  LEGAL_RULE,
-  LEGAL_RULE_B,
-  LEGAL_RULE_C,
-  GOAL,
-};
-
-TEST(AutomatonTest, simple) {
+TEST(AutomatonTest, safety) {
   RuleMonitorSPtr aut =
-      RuleMonitor::make_rule("G label", -1.0f, RewardPriority::SAFETY);
+      RuleMonitor::MakeRule("G label", -1.0f, 0);
   EvaluationMap labels;
   labels.insert({Label("label"), true});
-  RuleState state = aut->make_rule_state()[0];
-  double res = state.get_automaton()->evaluate(labels, state);
+  RuleState state = aut->MakeRuleState()[0];
+  double res = state.GetAutomaton()->Evaluate(labels, state);
   ASSERT_EQ(0.0, res);
   labels.clear();
   labels.insert({Label("label"), false});
-  res = state.get_automaton()->evaluate(labels, state);
+  res = state.GetAutomaton()->Evaluate(labels, state);
   ASSERT_EQ(-1.0, res);
 }
 
-TEST(AutomatonTest, liveness) {
+TEST(AutomatonTest, guarantee) {
   RuleMonitorSPtr aut =
-      RuleMonitor::make_rule("F label", -1.0f, RewardPriority::SAFETY);
+      RuleMonitor::MakeRule("F label", -1.0f, 0);
   EvaluationMap labels;
   labels.insert({Label("label"), false});
-  RuleState state = aut->make_rule_state()[0];
-  ASSERT_EQ(state.get_automaton()->evaluate(labels, state), 0.0);
-  ASSERT_EQ(state.get_automaton()->evaluate(labels, state), 0.0);
-  ASSERT_EQ(state.get_automaton()->get_final_reward(state), -1.0);
+  RuleState state = aut->MakeRuleState()[0];
+  ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
+  ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
+  ASSERT_EQ(state.GetAutomaton()->GetFinalReward(state), -1.0);
   labels.clear();
   labels.insert({Label("label"), true});
-  ASSERT_EQ(state.get_automaton()->evaluate(labels, state), 0.0);
-  ASSERT_EQ(state.get_automaton()->get_final_reward(state), 0.0);
+  ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
+  ASSERT_EQ(state.GetAutomaton()->GetFinalReward(state), 0.0);
 }
 
 TEST(AutomatonTest, parse_agent) {
   RuleMonitorSPtr aut =
-      RuleMonitor::make_rule("G agent#0", -1.0f, RewardPriority::SAFETY);
+      RuleMonitor::MakeRule("G agent#0", -1.0f, 0);
   aut =
-      RuleMonitor::make_rule("G agent_1_test#0", -1.0f, RewardPriority::SAFETY);
-  aut = RuleMonitor::make_rule("G agent_1_test#0 & agent2#1 & env", -1.0f,
-                               RewardPriority::SAFETY);
+      RuleMonitor::MakeRule("G agent_1_test#0", -1.0f, 0);
+  aut = RuleMonitor::MakeRule("G agent_1_test#0 & agent2#1 & env", -1.0f,
+                              0);
   // TODO: add checks
 }
 
 TEST(AutomatonTest, agent_specific_rule_state) {
-  RuleMonitorSPtr aut = RuleMonitor::make_rule("G (a#0 & b#1)", -1.0f, 0);
-  auto rule_states = aut->make_rule_state({1, 2});
+  RuleMonitorSPtr aut = RuleMonitor::MakeRule("G (a#0 & b#1)", -1.0f, 0);
+  auto rule_states = aut->MakeRuleState({1, 2});
   EXPECT_EQ(2, rule_states.size());
-  EXPECT_EQ(1, rule_states[0].get_agent_ids()[0]);
-  EXPECT_EQ(2, rule_states[0].get_agent_ids()[1]);
-  EXPECT_EQ(2, rule_states[1].get_agent_ids()[0]);
-  EXPECT_EQ(1, rule_states[1].get_agent_ids()[1]);
+  EXPECT_EQ(1, rule_states[0].GetAgentIds()[0]);
+  EXPECT_EQ(2, rule_states[0].GetAgentIds()[1]);
+  EXPECT_EQ(2, rule_states[1].GetAgentIds()[0]);
+  EXPECT_EQ(1, rule_states[1].GetAgentIds()[1]);
 
-  aut = RuleMonitor::make_rule("G a", -1.0f, 0);
-  rule_states = aut->make_rule_state();
+  aut = RuleMonitor::MakeRule("G a", -1.0f, 0);
+  rule_states = aut->MakeRuleState();
   EXPECT_EQ(1, rule_states.size());
-  EXPECT_FALSE(rule_states[0].is_agent_specific());
+  EXPECT_FALSE(rule_states[0].IsAgentSpecific());
 }
 
 TEST(AutomatonTest, agent_specific_rule_transition) {
   RuleMonitorSPtr aut =
-      RuleMonitor::make_rule("G label#0", -1.0f, RewardPriority::SAFETY);
+      RuleMonitor::MakeRule("G label#0", -1.0f, 0);
   EvaluationMap labels;
   labels.insert({Label("label", 1), true});
-  RuleState state = aut->make_rule_state({1})[0];
-  double res = state.get_automaton()->evaluate(labels, state);
+  RuleState state = aut->MakeRuleState({1})[0];
+  double res = state.GetAutomaton()->Evaluate(labels, state);
   ASSERT_EQ(0.0, res);
   labels.clear();
   labels.insert({Label("label", 1), false});
-  res = state.get_automaton()->evaluate(labels, state);
+  res = state.GetAutomaton()->Evaluate(labels, state);
   ASSERT_EQ(-1.0, res);
 }
 
