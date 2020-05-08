@@ -120,6 +120,7 @@ TEST_P(ZipperMergeFormula, false_merge_with_lane_change) {
 }
 
 const std::string formulas[] = {
+    "(in_direct_front_x & !merged_e & (in_direct_front_x | merged_x) U merged_e) -> G(merged_e & merged_x -> !in_direct_front_x)"
 };
 
 INSTANTIATE_TEST_CASE_P(ZipperMergeFormulaTest, ZipperMergeFormula,
