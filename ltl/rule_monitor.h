@@ -41,7 +41,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
         const std::vector<int> &current_agent_ids = {},
         const std::vector<int> &existing_agent_ids = {}) const;
 
-    float Evaluate(EvaluationMap const &labels, RuleState &state) const;
+    float Evaluate(const EvaluationMap &labels, RuleState &state) const;
 
     float GetFinalReward(const RuleState &state) const;
 
@@ -75,9 +75,11 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
     float Transit(const EvaluationMap &labels, RuleState &state) const;
 
     struct APContainer {
+        bool operator==(const APContainer &rhs) const;
+        bool operator!=(const APContainer &rhs) const;
         std::string ap_str;
         spot::formula ap;
-        int id_idx;
+        int placeholder_idx;
         bool is_agent_specific;
     };
 

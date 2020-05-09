@@ -80,6 +80,17 @@ TEST(AutomatonTest, agent_specific_rule_transition) {
   ASSERT_EQ(-1.0, res);
 }
 
+TEST(AutomatonTest, undefined_label) {
+    RuleMonitorSPtr aut =
+        RuleMonitor::MakeRule("G label", -1.0f, 0);
+    EvaluationMap labels;
+    // The rule would need this label
+    // labels.insert({Label("label"), true});
+    RuleState state = aut->MakeRuleState()[0];
+    // Process should die for undefined labels
+    ASSERT_DEATH({state.GetAutomaton()->Evaluate(labels, state);}, ".*");
+}
+
 int main(int argc, char **argv) {
   google::AllowCommandLineReparsing();
   google::ParseCommandLineFlags(&argc, &argv, false);

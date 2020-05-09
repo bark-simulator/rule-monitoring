@@ -95,9 +95,9 @@ std::vector<RuleState> RuleMonitor::MakeRuleState(
   int num_other_agents =
       std::max_element(ap_alphabet_.begin(), ap_alphabet_.end(),
                        [](const APContainer &a, const APContainer &b) {
-                         return (a.id_idx < b.id_idx);
+                         return (a.placeholder_idx < b.placeholder_idx);
                        })
-          ->id_idx +
+          ->placeholder_idx +
       1;
   num_other_agents = std::max(num_other_agents, 0);
 
@@ -166,7 +166,7 @@ float RuleMonitor::Transit(const EvaluationMap &labels,
   for (const auto &ap : ap_alphabet_) {
     Label label;
     if (ap.is_agent_specific) {
-      label = Label(ap.ap_str, state.GetAgentIds()[ap.id_idx]);
+      label = Label(ap.ap_str, state.GetAgentIds()[ap.placeholder_idx]);
     } else {
       label = Label(ap.ap_str);
     }
@@ -198,7 +198,7 @@ float RuleMonitor::Transit(const EvaluationMap &labels,
     state.current_state_ = aut_->get_init_state_number();
     penalty = weight_;
   } else if (transition_found != BddResult::TRUE && undef_trans_found) {
-    VLOG(2) << "Rule" << str_formula_ << " undefined!";
+    LOG(FATAL) << "Rule" << str_formula_ << " undefined!";
   }
   return penalty;
 }
@@ -259,5 +259,15 @@ void RuleMonitor::PrintToDot(const std::string &fname) {
   os.open(fname);
   spot::print_dot(os, aut_);
   os.close();
+}
+
+bool RuleMonitor::APContainer::operator==(const RuleMonitor::APContainer &rhs) const {
+    return ap_str == rhs.ap_str &&
+        ap == rhs.ap &&
+        placeholder_idx == rhs.placeholder_idx &&
+        is_agent_specific == rhs.is_agent_specific;
+}
+bool RuleMonitor::APContainer::operator!=(const RuleMonitor::APContainer &rhs) const {
+    return !(rhs == *this);
 }
 }  // namespace ltl
