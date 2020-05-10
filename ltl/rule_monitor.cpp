@@ -27,10 +27,9 @@
 
 namespace ltl {
 RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
-                         RulePriority priority, float final_reward)
+                         RulePriority priority)
     : str_formula_(ltl_formula_str),
       weight_(weight),
-      final_reward_(final_reward),
       priority_(priority),
       rule_is_agent_specific_(false) {
 
@@ -218,8 +217,8 @@ RuleMonitor::BddResult RuleMonitor::EvaluateBdd(
   return bdd_node == bddtrue ? BddResult::TRUE : BddResult::FALSE;
 }
 
-float RuleMonitor::GetFinalReward(const RuleState &state) const {
-  float penalty = final_reward_;
+float RuleMonitor::FinalTransit(const RuleState &state) const {
+  float penalty = 0.0f;
   EvaluationMap not_alive;
   not_alive.insert({Label::MakeAlive(), false});
   RuleState final_state = state;
@@ -244,16 +243,11 @@ spot::formula RuleMonitor::ParseFormula(const std::string &ltl_formula_str) {
   }
   return pf.f;
 }
-void RuleMonitor::SetWeight(float weight) { weight_ = weight; }
-void RuleMonitor::SetFinalReward(float final_reward) {
-  final_reward_ = final_reward;
-}
-void RuleMonitor::SetPriority(RulePriority priority) { priority_ = priority; }
+
 RulePriority RuleMonitor::GetPriority() const { return priority_; }
 bool RuleMonitor::IsAgentSpecific() const { return rule_is_agent_specific_; }
 const std::string &RuleMonitor::GetStrFormula() const { return str_formula_; }
 float RuleMonitor::GetWeight() const { return weight_; }
-float RuleMonitor::GetFinalReward() const { return final_reward_; }
 void RuleMonitor::PrintToDot(const std::string &fname) {
   std::ofstream os;
   os.open(fname);

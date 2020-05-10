@@ -34,11 +34,11 @@ TEST(AutomatonTest, guarantee) {
   RuleState state = aut->MakeRuleState()[0];
   ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
   ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
-  ASSERT_EQ(state.GetAutomaton()->GetFinalReward(state), -1.0);
+  ASSERT_EQ(state.GetAutomaton()->FinalTransit(state), -1.0);
   labels.clear();
   labels.insert({Label("label"), true});
   ASSERT_EQ(state.GetAutomaton()->Evaluate(labels, state), 0.0);
-  ASSERT_EQ(state.GetAutomaton()->GetFinalReward(state), 0.0);
+  ASSERT_EQ(state.GetAutomaton()->FinalTransit(state), 0.0);
 }
 
 TEST(AutomatonTest, parse_agent) {

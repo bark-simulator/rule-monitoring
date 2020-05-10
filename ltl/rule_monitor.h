@@ -31,10 +31,9 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
     typedef std::shared_ptr<RuleMonitor> RuleMonitorSPtr;
 
     static RuleMonitorSPtr MakeRule(std::string ltl_formula_str, float weight,
-                                    RulePriority priority,
-                                    float final_reward = 0.0f) {
+                                    RulePriority priority) {
         return RuleMonitorSPtr(
-            new RuleMonitor(ltl_formula_str, weight, priority, final_reward));
+            new RuleMonitor(ltl_formula_str, weight, priority));
     }
 
     std::vector<RuleState> MakeRuleState(
@@ -43,22 +42,15 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
 
     float Evaluate(const EvaluationMap &labels, RuleState &state) const;
 
-    float GetFinalReward(const RuleState &state) const;
+    float FinalTransit(const RuleState &state) const;
 
     RulePriority GetPriority() const;
-
-    void SetWeight(float weight);
-
-    void SetFinalReward(float final_reward);
-
-    void SetPriority(RulePriority priority);
 
     bool IsAgentSpecific() const;
 
     friend std::ostream &operator<<(std::ostream &os, RuleMonitor const &d);
     const std::string &GetStrFormula() const;
     float GetWeight() const;
-    float GetFinalReward() const;
     void PrintToDot(const std::string &fname);
 
  private:
@@ -68,7 +60,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
     static BddResult EvaluateBdd(bdd cond, const std::map<int, bool> &vars);
 
     RuleMonitor(const std::string &ltl_formula_str, float weight,
-                RulePriority priority, float final_reward = 0.0f);
+                RulePriority priority);
     std::string ParseAgents(const std::string &ltl_formula_str);
     std::vector<std::vector<int>> AllKPermutations(
         const std::vector<int> &values, int k) const;
@@ -85,7 +77,6 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
 
     std::string str_formula_;
     float weight_;
-    float final_reward_;
     spot::twa_graph_ptr aut_;
     spot::formula ltl_formula_;
     RulePriority priority_;

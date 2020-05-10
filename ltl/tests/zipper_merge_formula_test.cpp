@@ -23,7 +23,7 @@ inline bool check_violation(RuleState *rs, const EvaluationMap &labels) {
 }
 
 inline bool check_final(const RuleState &rs) {
-  float res = rs.GetAutomaton()->GetFinalReward(rs);
+  float res = rs.GetAutomaton()->FinalTransit(rs);
   return (res != 0.0);
 }
 

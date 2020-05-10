@@ -27,14 +27,14 @@ void define_rule_monitor(py::module m) {
       .def(py::pickle(
           [](const RuleMonitor &b) {
             return py::make_tuple(b.GetStrFormula(), b.GetWeight(),
-                                  b.GetPriority(), b.GetFinalReward());
+                                  b.GetPriority());
           },
           [](py::tuple t) {
-            if (t.size() != 4)
+            if (t.size() != 3)
               throw std::runtime_error("Invalid RuleMonitor evaluator state!");
             return RuleMonitor::MakeRule(
                 t[0].cast<std::string>(), t[1].cast<float>(),
-                t[2].cast<RulePriority>(), t[3].cast<float>());
+                t[2].cast<RulePriority>());
           }));
 
   py::class_<RuleState, std::shared_ptr<RuleState>>(m, "RuleState")
