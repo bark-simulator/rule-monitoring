@@ -18,6 +18,7 @@ void define_rule_monitor(py::module m) {
       .def(py::init(&RuleMonitor::MakeRule))
       .def("MakeRule", &RuleMonitor::MakeRule)
       .def("MakeRuleState", &RuleMonitor::MakeRuleState)
+      .def("PrintToDot", &RuleMonitor::PrintToDot)
       .def("__repr__",
            [](const RuleMonitor &m) {
              std::stringstream os;
@@ -38,6 +39,8 @@ void define_rule_monitor(py::module m) {
           }));
 
   py::class_<RuleState, std::shared_ptr<RuleState>>(m, "RuleState")
+      .def_property_readonly("automaton", &RuleState::GetAutomaton)
+      .def_property_readonly("current_state", &RuleState::GetCurrentState)
       .def_property_readonly("violation_count", &RuleState::GetViolationCount);
 
   py::class_<Label, std::shared_ptr<Label>>(m, "Label")
