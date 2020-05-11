@@ -80,7 +80,6 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
     spot::twa_graph_ptr aut_;
     spot::formula ltl_formula_;
     RulePriority priority_;
-    Eigen::Matrix2d observation_prob_;
     std::vector<APContainer> ap_alphabet_;
     bool rule_is_agent_specific_;
 };

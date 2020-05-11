@@ -54,7 +54,6 @@ RuleMonitor::RuleMonitor(const std::string &ltl_formula_str, float weight,
         spot::formula::ap("alive"), aut_));
     aut_->new_edge(aut_->get_init_state_number(), final_state, !alive_bdd);
   }
-  observation_prob_ << 0.9, 0.1, 0.5, 0.5;
 }
 std::string RuleMonitor::ParseAgents(const std::string &ltl_formula_str) {
   std::string remaining = ltl_formula_str;
