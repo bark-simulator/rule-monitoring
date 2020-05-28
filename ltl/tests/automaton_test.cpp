@@ -91,6 +91,23 @@ TEST(AutomatonTest, undefined_label) {
     ASSERT_DEATH({state.GetAutomaton()->Evaluate(labels, state);}, ".*");
 }
 
+TEST(AutomatonTest, persistence) {
+    RuleMonitorSPtr aut = RuleMonitor::MakeRule("F (G a)", -1.0f, 0);
+    RuleState state = aut->MakeRuleState()[0];
+    EvaluationMap map;
+    map[Label("a")] = false;
+    ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+    ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+    ASSERT_EQ(-1.0f, state.GetAutomaton()->FinalTransit(state));
+    map[Label("a")] = true;
+    ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+    ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+    ASSERT_EQ(0.0f, state.GetAutomaton()->FinalTransit(state));
+    map[Label("a")] = false;
+    ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+    ASSERT_EQ(-1.0f, state.GetAutomaton()->FinalTransit(state));
+}
+
 int main(int argc, char **argv) {
   google::AllowCommandLineReparsing();
   google::ParseCommandLineFlags(&argc, &argv, false);
