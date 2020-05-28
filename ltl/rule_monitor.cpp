@@ -77,11 +77,11 @@ std::string RuleMonitor::ParseAgents(const std::string &ltl_formula_str) {
         agent_free_formula += sm.prefix();
         agent_free_formula += ap_name;
         // TODO: Make ap_alphabet a set, so AP containers are unique
-        ap_alphabet_.push_back({ap_name, spot::formula::ap(ap_name),
+        ap_alphabet_.insert({ap_name, spot::formula::ap(ap_name),
                                 agent_id_placeholder, ap_is_agent_specific});
         remaining = sm.suffix();
     }
-    ap_alphabet_.push_back({"alive", spot::formula::ap("alive"), -1, false});
+    ap_alphabet_.insert({"alive", spot::formula::ap("alive"), -1, false});
     agent_free_formula += remaining;
     VLOG(2) << "Cleaned formula: " << agent_free_formula;
     return agent_free_formula;
@@ -172,6 +172,9 @@ float RuleMonitor::Transit(const EvaluationMap &labels,
         if (it != labels.end()) {
             int bdd_var = bddDictPtr->has_registered_proposition(ap.ap, aut_);
             bddvars.insert({bdd_var, it->second});
+        } else if(labels.at(Label::MakeAlive())) {
+            // We ware alive but the label is undefined
+            LOG(FATAL) << "Rule " << str_formula_ << " undefined! Missing label \"" << ap.ap_str <<"\"! Aborting!";
         }
     }
 

@@ -75,12 +75,19 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
         bool is_agent_specific;
     };
 
+    struct APContainerHash {
+     public:
+        size_t operator()(const APContainer &apcont) const {
+            return std::hash<std::string>()(apcont.ap_str);
+        }
+    };
+
     std::string str_formula_;
     float weight_;
     spot::twa_graph_ptr aut_;
     spot::formula ltl_formula_;
     RulePriority priority_;
-    std::vector<APContainer> ap_alphabet_;
+    std::unordered_set<APContainer, APContainerHash> ap_alphabet_;
     bool rule_is_agent_specific_;
 };
 }  // namespace ltl
