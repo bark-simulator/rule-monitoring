@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "glog/logging.h"
-#include "ltl/label.h"
+#include "bark/world/evaluation/ltl/label/label.h"
 #include "spot/tl/apcollect.hh"
 #include "spot/tl/hierarchy.hh"
 #include "spot/tl/ltlf.hh"

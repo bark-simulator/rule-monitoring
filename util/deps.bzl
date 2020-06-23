@@ -4,6 +4,13 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file"
 
 def rule_monitor_dependencies():
     _maybe(
+    git_repository,
+    name = "bark_project",
+    commit="f3d8a60a1b09e80d665ac4e9c9d34c9ce917ea50",
+    remote = "https://github.com/bark-simulator/bark",
+    )
+
+    _maybe(
     native.new_local_repository,
     name = "python_linux",
     path = "./python/venv/",

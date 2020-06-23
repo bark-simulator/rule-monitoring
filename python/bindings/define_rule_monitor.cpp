@@ -8,7 +8,7 @@
 
 #include "define_rule_monitor.hpp"
 
-#include "ltl/label.h"
+#include "bark/world/evaluation/ltl/label/label.h"
 #include "ltl/rule_monitor.h"
 
 namespace py = pybind11;

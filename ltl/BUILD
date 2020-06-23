@@ -2,19 +2,18 @@ cc_library(
     name = "rule_monitor",
     srcs = [
         "rule_monitor.cpp",
-        "label.cpp",
         "rule_state.cpp",
     ],
     hdrs = [
         "common.h",
         "rule_monitor.h",
-        "label.h",
         "rule_state.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_eigen_eigen//:eigen",
         "@com_github_google_glog//:glog",
+        "@bark_project//bark/world/evaluation/ltl/label:include",
         "@spot",
     ],
 )

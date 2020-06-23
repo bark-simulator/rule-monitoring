@@ -6,7 +6,7 @@
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "gtest/gtest.h"
-#include "ltl/label.h"
+#include "bark/world/evaluation/ltl/label/label.h"
 #include "ltl/rule_monitor.h"
 
 using namespace ltl;

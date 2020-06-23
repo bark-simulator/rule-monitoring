@@ -15,14 +15,12 @@
 
 #include "Eigen/Core"
 #include "ltl/common.h"
-#include "ltl/label.h"
+#include "bark/world/evaluation/ltl/label/label.h"
 #include "ltl/rule_state.h"
 #include "spot/tl/parse.hh"
 #include "spot/twaalgos/translate.hh"
 
 namespace ltl {
-
-typedef std::unordered_map<Label, bool, LabelHash> EvaluationMap;
 
 class RuleState;
 
