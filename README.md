@@ -1,3 +1,5 @@
+![CI Build](https://github.com/bark-simulator/rule-monitoring/workflows/CI/badge.svg)
+
 # Rule Monitor
 Runtime Verification of LTL Rules implementation in C++.
 
