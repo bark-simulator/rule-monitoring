@@ -21,8 +21,8 @@
 #include "spot/twaalgos/translate.hh"
 
 namespace ltl {
-using modules::world::evaluation::EvaluationMap;
-using modules::world::evaluation::Label;
+using bark::world::evaluation::EvaluationMap;
+using bark::world::evaluation::Label;
 
 class RuleState;
 
