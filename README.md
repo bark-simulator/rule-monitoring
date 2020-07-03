@@ -3,13 +3,6 @@
 # Rule Monitor
 Runtime Verification of LTL Rules implementation in C++.
 
-## Installation & Test
-- Install [bazel](https://docs.bazel.build/versions/master/install.html)
-- Run `bazel test //...` in the WORKSPACE directory
-
-# Dependencies
-- libltdl-dev (should be part of Ubuntu xenial and bionic already)
-
 Please have a look into the corresponding [publication](https://arxiv.org/abs/2007.00330)
 
 If you use code in this modules, please cite it as:
@@ -24,3 +17,11 @@ If you use code in this modules, please cite it as:
     primaryClass={cs.RO}
 }
 ```
+
+## Installation & Test
+- Install [bazel](https://docs.bazel.build/versions/master/install.html)
+- Run `bazel test //...` in the WORKSPACE directory
+
+# Dependencies
+- libltdl-dev (should be part of Ubuntu xenial and bionic already)
+
