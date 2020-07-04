@@ -64,6 +64,10 @@ std::string RuleMonitor::ParseAgents(const std::string &ltl_formula_str) {
     std::smatch sm;
     while (std::regex_search(remaining, sm, r)) {
         std::string ap_name = sm[1];
+        // Check for boolean constants
+        if(ap_name == "true" || ap_name == "false") {
+          continue;
+        }
         bool ap_is_agent_specific = false;
         for (const auto &a : sm) {
             DVLOG(2) << a;
