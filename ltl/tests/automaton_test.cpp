@@ -108,6 +108,25 @@ TEST(AutomatonTest, persistence) {
     ASSERT_EQ(-1.0f, state.GetAutomaton()->FinalTransit(state));
 }
 
+TEST(AutomatonTest, boolean_constants) {
+  RuleMonitorSPtr aut = RuleMonitor::MakeRule("G true", -1.0f, 0);
+  RuleState state = aut->MakeRuleState()[0];
+  EvaluationMap map;
+  ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+
+  aut = RuleMonitor::MakeRule("G !true", -1.0f, 0);
+  state = aut->MakeRuleState()[0];
+  ASSERT_EQ(-1.0f, state.GetAutomaton()->Evaluate(map, state));
+
+  aut = RuleMonitor::MakeRule("G !false", -1.0f, 0);
+  state = aut->MakeRuleState()[0];
+  ASSERT_EQ(0.0f, state.GetAutomaton()->Evaluate(map, state));
+
+  aut = RuleMonitor::MakeRule("G false", -1.0f, 0);
+  state = aut->MakeRuleState()[0];
+  ASSERT_EQ(-1.0f, state.GetAutomaton()->Evaluate(map, state));
+}
+
 int main(int argc, char **argv) {
     google::AllowCommandLineReparsing();
     google::ParseCommandLineFlags(&argc, &argv, false);
