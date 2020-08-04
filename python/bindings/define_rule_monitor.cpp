@@ -46,6 +46,8 @@ void define_rule_monitor(py::module m) {
   py::class_<Label, std::shared_ptr<Label>>(m, "Label")
       .def(py::init<const std::string &, int>())
       .def(py::init<const std::string &>())
+      .def_property_readonly("label_str", &Label::GetLabelStr)
+      .def_property_readonly("agent_id", &Label::GetAgentId)
       .def("__repr__", [](const Label &l) {
         std::stringstream os;
         os << l;
