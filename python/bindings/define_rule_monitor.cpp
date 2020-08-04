@@ -43,6 +43,7 @@ void define_rule_monitor(py::module m) {
       .def_property_readonly("current_state", &RuleState::GetCurrentState)
       .def_property_readonly("violation_count", &RuleState::GetViolationCount);
 
+  // TODO(@fortiss): Move to BARK repo
   py::class_<Label, std::shared_ptr<Label>>(m, "Label")
       .def(py::init<const std::string &, int>())
       .def(py::init<const std::string &>())
