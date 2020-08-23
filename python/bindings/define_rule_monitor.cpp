@@ -59,7 +59,7 @@ void define_rule_monitor(py::module m) {
         return os.str();
       });
 
-  py::class_<EvaluationMap, std::shared_ptr<EvaluationMap>>(m, "EvaluationMap");
+  py::class_<EvaluationMap, std::shared_ptr<EvaluationMap>>(m, "EvaluationMap")
       .def("GetValue", &EvaluationMap::GetValue);
 
 }
