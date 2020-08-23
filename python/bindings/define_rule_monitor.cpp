@@ -9,10 +9,14 @@
 #include "define_rule_monitor.hpp"
 
 #include "bark/world/evaluation/ltl/label/label.h"
+#include "bark/world/evaluation/ltl/label/evaluation_map.hpp"
 #include "ltl/rule_monitor.h"
 
 namespace py = pybind11;
 using namespace ltl;
+using bark::world::evaluation::EvaluationMap;
+using bark::world::evaluation::Label;
+
 void define_rule_monitor(py::module m) {
   py::class_<RuleMonitor, std::shared_ptr<RuleMonitor>>(m, "RuleMonitor")
       .def(py::init(&RuleMonitor::MakeRule))
@@ -54,4 +58,8 @@ void define_rule_monitor(py::module m) {
         os << l;
         return os.str();
       });
+
+  py::class_<EvaluationMap, std::shared_ptr<EvaluationMap>>(m, "EvaluationMap");
+      .def("GetValue", &EvaluationMap::GetValue);
+
 }
