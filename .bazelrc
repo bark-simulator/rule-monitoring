@@ -4,7 +4,7 @@ test --test_output=errors --action_env="GTEST_COLOR=1"
 common --color=yes
 
 #build --cxxopt='-std=c++14' --local_ram_resources=HOST_RAM*.4 --local_cpu_resources=2
-build --cxxopt='-std=c++14' --jobs=2
+build --cxxopt='-std=c++17' --jobs=2 --define ltl_rules=true
 
 build:gprof --copt='-pg' --cxxopt='-pg' --linkopt='-pg'
 
