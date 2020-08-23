@@ -148,20 +148,18 @@ std::vector<std::vector<int>> RuleMonitor::AllKPermutations(
   return permutations;
 }
 
-float RuleMonitor::Evaluate(const EvaluationMap& labels,
+float RuleMonitor::Evaluate(EvaluationMap* labels,
                             RuleState& state) const {
 #ifdef PROFILING
   EASY_FUNCTION();
 #endif
-
-  EvaluationMap alive_labels = labels;
-  alive_labels.insert({Label::MakeAlive(), true});
-  return Transit(alive_labels, state);
+  labels->SetValue(Label::MakeAlive(), true);
+  return Transit(labels, state);
 }
 
-float RuleMonitor::Transit(const EvaluationMap& labels,
+float RuleMonitor::Transit(EvaluationMap* labels,
                            RuleState& state) const {
-  std::map<int, bool> bddvars;
+  std::map<int, Label> bddvars;
   spot::bdd_dict_ptr bddDictPtr = aut_->get_dict();
   for (const auto& ap : ap_alphabet_) {
     Label label;
@@ -170,53 +168,58 @@ float RuleMonitor::Transit(const EvaluationMap& labels,
     } else {
       label = Label(ap.ap_str);
     }
-    auto it = labels.find(label);
-    if (it != labels.end()) {
       int bdd_var = bddDictPtr->has_registered_proposition(ap.ap, aut_);
-      bddvars.insert({bdd_var, it->second});
-    } else if (labels.at(Label::MakeAlive())) {
-      // We ware alive but the label is undefined
-      LOG(FATAL) << "Rule " << str_formula_ << " undefined! Missing label \""
-                 << ap.ap_str << "\"! Aborting!";
-    }
+      bddvars.insert({bdd_var, label});
+//      LOG(FATAL) << "Rule " << str_formula_ << " undefined! Missing label \""
+//                 << ap.ap_str << "\"! Aborting!";
   }
 
+  const bool alive = *(labels->GetValue(Label::MakeAlive()));
   BddResult transition_found = BddResult::FALSE;
   // Indicates if we have found undefined transitions
   bool undef_trans_found = false;
   for (const auto& transition : aut_->out(state.current_state_)) {
-    transition_found = EvaluateBdd(transition.cond, bddvars);
+    transition_found = EvaluateBdd(transition.cond, bddvars, labels);
     if (transition_found == BddResult::TRUE) {
+      // The transition is unique
       state.current_state_ = transition.dst;
       break;
-    }
-    if (transition_found == BddResult::UNDEF) {
+    } else if (transition_found == BddResult::UNDEF) {
       undef_trans_found = true;
     }
   }
 
   float penalty = 0.0f;
+  // Rule is violated if EITHER:
+  // 1.: All transitions are defined AND no valid transition has been found
+  // 2.: We are not alive and no defined transition has been found
   if ((transition_found == BddResult::FALSE && !undef_trans_found) ||
-      (transition_found != BddResult::TRUE && !labels.at(Label::MakeAlive()))) {
+      (transition_found != BddResult::TRUE && !alive)) {
     ++state.violated_;
     // Reset automaton if rule has been violated
     state.current_state_ = aut_->get_init_state_number();
     penalty = weight_;
-  } else if (transition_found != BddResult::TRUE && undef_trans_found) {
-    LOG(FATAL) << "Rule " << str_formula_ << " undefined!";
+  } else if (alive && undef_trans_found) {
+    // If we are alive and undefined transitions have been found, something is wrong
+    // as we are missing labels.
+    LOG(FATAL) << "Rule \"" << str_formula_ << "\" undefined! Aborting!";
   }
   return penalty;
 }
 
 RuleMonitor::BddResult RuleMonitor::EvaluateBdd(
-    bdd cond, const std::map<int, bool>& vars) {
+    bdd cond, const std::map<int, Label>& vars, EvaluationMap* value_map) {
   bdd bdd_node = cond;
   while (bdd_node != bddtrue && bdd_node != bddfalse) {
     auto it = vars.find(bdd_var(bdd_node));
-    if (it != vars.end()) {
-      bdd_node = it->second ? bdd_high(bdd_node) : bdd_low(bdd_node);
+    assert(it != vars.end());
+    auto value = value_map->GetValue(it->second);
+    if (value) {
+      bdd_node = *value ? bdd_high(bdd_node) : bdd_low(bdd_node);
     } else {
       // Undefined AP
+      const bool alive = *(value_map->GetValue(Label::MakeAlive()));
+      LOG_IF(WARNING, alive) << "Label \"" << it->second.GetLabelStr() << "\" undefined!";
       return BddResult::UNDEF;
     }
   }
@@ -225,10 +228,10 @@ RuleMonitor::BddResult RuleMonitor::EvaluateBdd(
 
 float RuleMonitor::FinalTransit(const RuleState& state) const {
   float penalty = 0.0f;
-  EvaluationMap not_alive;
-  not_alive.insert({Label::MakeAlive(), false});
+  EvaluationMap not_alive(nullptr, {});
+  not_alive.SetValue(Label::MakeAlive(), false);
   RuleState final_state = state;
-  Transit(not_alive, final_state);
+  Transit(&not_alive, final_state);
   if (!aut_->state_is_accepting(final_state.current_state_)) {
     penalty = weight_;
   }

@@ -13,7 +13,7 @@ cc_library(
     deps = [
         "@com_github_eigen_eigen//:eigen",
         "@com_github_google_glog//:glog",
-        "@bark_project//bark/world/evaluation/ltl/label:include",
+        "@bark_project//bark/world/evaluation/ltl/label:label",
         "@spot",
     ],
 )

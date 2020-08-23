@@ -15,6 +15,7 @@
 
 #include "Eigen/Core"
 #include "bark/world/evaluation/ltl/label/label.h"
+#include "bark/world/evaluation/ltl/label/evaluation_map.hpp"
 #include "ltl/common.h"
 #include "ltl/rule_state.h"
 #include "spot/tl/parse.hh"
@@ -39,7 +40,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
       const std::vector<int>& current_agent_ids = {},
       const std::vector<int>& existing_agent_ids = {}) const;
 
-  float Evaluate(const EvaluationMap& labels, RuleState& state) const;
+  float Evaluate(EvaluationMap* labels, RuleState& state) const;
 
   float FinalTransit(const RuleState& state) const;
 
@@ -56,14 +57,14 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   enum BddResult { TRUE, FALSE, UNDEF };
 
   static spot::formula ParseFormula(const std::string& ltl_formula_str);
-  static BddResult EvaluateBdd(bdd cond, const std::map<int, bool>& vars);
+  static BddResult EvaluateBdd(bdd cond, const std::map<int, Label>& vars, EvaluationMap* value_map);
 
   RuleMonitor(const std::string& ltl_formula_str, float weight,
               RulePriority priority);
   std::string ParseAgents(const std::string& ltl_formula_str);
   std::vector<std::vector<int>> AllKPermutations(const std::vector<int>& values,
                                                  int k) const;
-  float Transit(const EvaluationMap& labels, RuleState& state) const;
+  float Transit(EvaluationMap* labels, RuleState& state) const;
 
   struct APContainer {
     bool operator==(const APContainer& rhs) const;
