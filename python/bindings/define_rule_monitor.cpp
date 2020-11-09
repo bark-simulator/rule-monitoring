@@ -43,9 +43,12 @@ void define_rule_monitor(py::module m) {
       .def_property_readonly("current_state", &RuleState::GetCurrentState)
       .def_property_readonly("violation_count", &RuleState::GetViolationCount);
 
+  // TODO(@fortiss): Move to BARK repo
   py::class_<Label, std::shared_ptr<Label>>(m, "Label")
       .def(py::init<const std::string &, int>())
       .def(py::init<const std::string &>())
+      .def_property_readonly("label_str", &Label::GetLabelStr)
+      .def_property_readonly("agent_id", &Label::GetAgentId)
       .def("__repr__", [](const Label &l) {
         std::stringstream os;
         os << l;
