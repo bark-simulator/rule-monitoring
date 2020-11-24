@@ -30,7 +30,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
  public:
   typedef std::shared_ptr<RuleMonitor> RuleMonitorSPtr;
 
-  static RuleMonitorSPtr MakeRule(std::string ltl_formula_str, float weight,
+  static RuleMonitorSPtr MakeRule(std::string ltl_formula_str, double weight,
                                   RulePriority priority) {
     return RuleMonitorSPtr(new RuleMonitor(ltl_formula_str, weight, priority));
   }
@@ -39,9 +39,9 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
       const std::vector<int>& current_agent_ids = {},
       const std::vector<int>& existing_agent_ids = {}) const;
 
-  float Evaluate(const EvaluationMap& labels, RuleState& state) const;
+  double Evaluate(const EvaluationMap& labels, RuleState& state) const;
 
-  float FinalTransit(const RuleState& state) const;
+  double FinalTransit(const RuleState& state) const;
 
   RulePriority GetPriority() const;
 
@@ -49,7 +49,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
 
   friend std::ostream& operator<<(std::ostream& os, RuleMonitor const& d);
   const std::string& GetStrFormula() const;
-  float GetWeight() const;
+  double GetWeight() const;
   void PrintToDot(const std::string& fname);
 
  private:
@@ -58,12 +58,12 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   static spot::formula ParseFormula(const std::string& ltl_formula_str);
   static BddResult EvaluateBdd(bdd cond, const std::map<int, bool>& vars);
 
-  RuleMonitor(const std::string& ltl_formula_str, float weight,
+  RuleMonitor(const std::string& ltl_formula_str, double weight,
               RulePriority priority);
   std::string ParseAgents(const std::string& ltl_formula_str);
   std::vector<std::vector<int>> AllKPermutations(const std::vector<int>& values,
                                                  int k) const;
-  float Transit(const EvaluationMap& labels, RuleState& state) const;
+  double Transit(const EvaluationMap& labels, RuleState& state) const;
 
   struct APContainer {
     bool operator==(const APContainer& rhs) const;
@@ -82,7 +82,7 @@ class RuleMonitor : public std::enable_shared_from_this<RuleMonitor> {
   };
 
   std::string str_formula_;
-  float weight_;
+  double weight_;
   spot::twa_graph_ptr aut_;
   spot::formula ltl_formula_;
   RulePriority priority_;

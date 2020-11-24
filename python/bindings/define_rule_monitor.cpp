@@ -34,7 +34,7 @@ void define_rule_monitor(py::module m) {
             if (t.size() != 3)
               throw std::runtime_error("Invalid RuleMonitor evaluator state!");
             return RuleMonitor::MakeRule(
-                t[0].cast<std::string>(), t[1].cast<float>(),
+                t[0].cast<std::string>(), t[1].cast<double>(),
                 t[2].cast<RulePriority>());
           }));
 

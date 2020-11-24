@@ -26,7 +26,7 @@
 #endif
 
 namespace ltl {
-RuleMonitor::RuleMonitor(const std::string& ltl_formula_str, float weight,
+RuleMonitor::RuleMonitor(const std::string& ltl_formula_str, double weight,
                          RulePriority priority)
     : str_formula_(ltl_formula_str),
       weight_(weight),
@@ -148,7 +148,7 @@ std::vector<std::vector<int>> RuleMonitor::AllKPermutations(
   return permutations;
 }
 
-float RuleMonitor::Evaluate(const EvaluationMap& labels,
+double RuleMonitor::Evaluate(const EvaluationMap& labels,
                             RuleState& state) const {
 #ifdef PROFILING
   EASY_FUNCTION();
@@ -159,7 +159,7 @@ float RuleMonitor::Evaluate(const EvaluationMap& labels,
   return Transit(alive_labels, state);
 }
 
-float RuleMonitor::Transit(const EvaluationMap& labels,
+double RuleMonitor::Transit(const EvaluationMap& labels,
                            RuleState& state) const {
   std::map<int, bool> bddvars;
   spot::bdd_dict_ptr bddDictPtr = aut_->get_dict();
@@ -195,7 +195,7 @@ float RuleMonitor::Transit(const EvaluationMap& labels,
     }
   }
 
-  float penalty = 0.0f;
+  double penalty = 0.0f;
   if ((transition_found == BddResult::FALSE && !undef_trans_found) ||
       (transition_found != BddResult::TRUE && !labels.at(Label::MakeAlive()))) {
     ++state.violated_;
@@ -223,8 +223,8 @@ RuleMonitor::BddResult RuleMonitor::EvaluateBdd(
   return bdd_node == bddtrue ? BddResult::TRUE : BddResult::FALSE;
 }
 
-float RuleMonitor::FinalTransit(const RuleState& state) const {
-  float penalty = 0.0f;
+double RuleMonitor::FinalTransit(const RuleState& state) const {
+  double penalty = 0.0f;
   EvaluationMap not_alive;
   not_alive.insert({Label::MakeAlive(), false});
   RuleState final_state = state;
@@ -253,7 +253,7 @@ spot::formula RuleMonitor::ParseFormula(const std::string& ltl_formula_str) {
 RulePriority RuleMonitor::GetPriority() const { return priority_; }
 bool RuleMonitor::IsAgentSpecific() const { return rule_is_agent_specific_; }
 const std::string& RuleMonitor::GetStrFormula() const { return str_formula_; }
-float RuleMonitor::GetWeight() const { return weight_; }
+double RuleMonitor::GetWeight() const { return weight_; }
 void RuleMonitor::PrintToDot(const std::string& fname) {
   std::ofstream os;
   os.open(fname);

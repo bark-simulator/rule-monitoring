@@ -18,12 +18,12 @@ class ZipperMergeFormula : public testing::TestWithParam<std::string> {};
 /// \param labels Input labels
 /// \return violated?
 inline bool check_violation(RuleState *rs, const EvaluationMap &labels) {
-  float res = rs->GetAutomaton()->Evaluate(labels, *rs);
+  double res = rs->GetAutomaton()->Evaluate(labels, *rs);
   return (res != 0.0);
 }
 
 inline bool check_final(const RuleState &rs) {
-  float res = rs.GetAutomaton()->FinalTransit(rs);
+  double res = rs.GetAutomaton()->FinalTransit(rs);
   return (res != 0.0);
 }
 
