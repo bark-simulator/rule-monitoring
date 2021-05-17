@@ -17,7 +17,7 @@ cc_test(
     deps = [
         "//ltl:rule_monitor",
         "@com_github_gflags_gflags//:gflags",
-        "@com_github_google_glog//:glog",
+        "@com_github_glog_glog//:glog",
         "@gtest//:main",
     ],
 )

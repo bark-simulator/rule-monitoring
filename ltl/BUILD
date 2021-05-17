@@ -12,7 +12,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_eigen_eigen//:eigen",
-        "@com_github_google_glog//:glog",
+        "@com_github_glog_glog//:glog",
         "@bark_project//bark/world/evaluation/ltl/label:include",
         "@spot",
     ],
@@ -23,7 +23,7 @@ cc_library(
     hdrs = glob(["*.h"]),
     deps = [
         "@com_github_eigen_eigen//:eigen",
-        "@com_github_google_glog//:glog",
+        "@com_github_glog_glog//:glog",
         "@spot",
     ],
 )

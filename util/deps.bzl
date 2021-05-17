@@ -61,8 +61,8 @@ cc_library(
 
     _maybe(
       git_repository,
-      name = "com_github_google_glog",
-      commit = "3ba8976592274bc1f907c402ce22558011d6fc5e",
+      name = "com_github_glog_glog",
+      commit = "c5dcae830670bfaea9573fa7b700e862833d14ff", 
       remote = "https://github.com/google/glog"
     )
 
