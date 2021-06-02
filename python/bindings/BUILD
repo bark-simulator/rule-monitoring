@@ -12,8 +12,6 @@ cc_library(
     ],
     deps = [
         "//ltl:rule_monitor",
-        "@pybind11",
-        "@python_linux//:python-lib",
         "@spot",
     ],
 )
