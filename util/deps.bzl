@@ -6,7 +6,7 @@ def rule_monitor_dependencies():
     _maybe(
     git_repository,
     name = "bark_project",
-    commit="6d644860b3c6a81fef0e191b8dfef16dfd2ae0c6",
+    commit="580a27b3fc13199d835b15bdda0299e84265fc25",
     remote = "https://github.com/bark-simulator/bark",
     )
 
