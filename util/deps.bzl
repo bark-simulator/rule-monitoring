@@ -6,27 +6,19 @@ def rule_monitor_dependencies():
     _maybe(
     git_repository,
     name = "bark_project",
-    commit="6d644860b3c6a81fef0e191b8dfef16dfd2ae0c6",
+    commit="580a27b3fc13199d835b15bdda0299e84265fc25",
     remote = "https://github.com/bark-simulator/bark",
     )
 
     _maybe(
-    native.new_local_repository,
-    name = "python_linux",
-    path = "./python/venv/",
-    build_file_content = """
-cc_library(
-    name = "python-lib",
-    srcs = glob(["lib/libpython3.*", "libs/python3.lib", "libs/python36.lib"]),
-    hdrs = glob(["include/**/*.h", "include/*.h"]),
-    includes = ["include/python3.6m", "include", "include/python3.7m", "include/python3.5m"], 
-    visibility = ["//visibility:public"],
-)
-    """
+        git_repository,
+        name = "pybind11_bazel",
+        commit="c4a29062b77bf42836d995f6ce802f642cffb939",
+        remote = "https://github.com/bark-simulator/pybind11_bazel"
     )
 
     _maybe(
-    http_archive, 
+    http_archive,
     name = "gtest",
     url = "https://github.com/google/googletest/archive/release-1.7.0.zip",
     sha256 = "b58cb7547a28b2c718d1e38aee18a3659c9e3ff52440297e965f5edffe34b6d0",
@@ -62,12 +54,12 @@ cc_library(
     _maybe(
       git_repository,
       name = "com_github_glog_glog",
-      commit = "c5dcae830670bfaea9573fa7b700e862833d14ff", 
+      commit = "c5dcae830670bfaea9573fa7b700e862833d14ff",
       remote = "https://github.com/google/glog"
     )
 
     _maybe(
-    http_archive, 
+    http_archive,
     # Need Eigen 3.4 (which is in development) for STL-compatible iterators
     name = "com_github_eigen_eigen",
     build_file_content = """
