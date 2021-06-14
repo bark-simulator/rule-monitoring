@@ -8,4 +8,4 @@ import sys
 
 print(sys.path)
 
-import rule_monitor
+import test_module_rule_monitor

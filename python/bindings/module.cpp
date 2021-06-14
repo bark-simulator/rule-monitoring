@@ -7,6 +7,6 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(rule_monitor, m) {
+PYBIND11_MODULE(test_module_rule_monitor, m) {
   define_rule_monitor(m);
 }
